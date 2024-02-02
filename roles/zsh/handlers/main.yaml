@@ -1,0 +1,4 @@
+---
+- name: Ejecutar instalador de Oh My Zsh
+  command: sh /tmp/install_oh_my_zsh.sh
+

@@ -1,0 +1,19 @@
+---
+- name: Instalar kitty
+  become: yes
+  package:
+    name: kitty
+    state: present
+
+- name: Crear directorio de configuración de kitty
+  file:
+    path: "{{ ansible_env.HOME }}/.config/kitty"
+    state: directory
+    mode: '0755'
+
+- name: Copiar archivo de configuración de kitty
+  copy:
+    src: kitty.conf
+    dest: "{{ ansible_env.HOME }}/.config/kitty/kitty.conf"
+    mode: '0644'
+

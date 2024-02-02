@@ -1,0 +1,21 @@
+---
+- name: Instalar Zsh
+  become: yes
+  package:
+    name: zsh
+    state: present
+
+- name: Instalar Oh My Zsh
+  become: yes
+  get_url:
+    url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    dest: /tmp/install_oh_my_zsh.sh
+    mode: '0755'
+  notify:
+    - Ejecutar instalador de Oh My Zsh
+
+- name: Cambiar shell a Zsh
+  become: yes
+  command: chsh -s $(which zsh) {{ ansible_user_id }}
+  when: ansible_shell_type != 'zsh'
+
