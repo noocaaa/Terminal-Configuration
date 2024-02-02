@@ -1,4 +1,5 @@
 ---
 - name: Ejecutar instalador de Oh My Zsh
-  command: sh /tmp/install_oh_my_zsh.sh
-
+  command: sh /tmp/install_oh_my_zsh.sh --unattended
+  become: yes
+  become_user: "{{ ansible_user_id }}"

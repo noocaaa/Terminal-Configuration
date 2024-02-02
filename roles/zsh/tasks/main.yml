@@ -1,21 +1,41 @@
 ---
-- name: Instalar Zsh
+- name: Instalar Zsh y herramientas necesarias
   become: yes
   package:
-    name: zsh
+    name:
+      - zsh
+      - autojump
+      - fzf
     state: present
 
 - name: Instalar Oh My Zsh
   become: yes
   get_url:
     url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
-    dest: /tmp/install_oh_my_zsh.sh
+    dest: "/tmp/install_oh_my_zsh.sh"
     mode: '0755'
-  notify:
-    - Ejecutar instalador de Oh My Zsh
+  notify: Ejecutar instalador de Oh My Zsh
+
+- name: Copiar archivo .zshrc personalizado
+  copy:
+    src: .zshrc
+    dest: "{{ ansible_env.HOME }}/.zshrc"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
 
 - name: Cambiar shell a Zsh
   become: yes
-  command: chsh -s $(which zsh) {{ ansible_user_id }}
-  when: ansible_shell_type != 'zsh'
+  user:
+    name: "{{ ansible_user_id }}"
+    shell: "/bin/zsh"
 
+- name: Clonar repositorios de plugins de Zsh
+  git:
+    repo: "{{ item.repo }}"
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/{{ item.name }}"
+  loop:
+    - { name: 'zsh-autosuggestions', repo: 'https://github.com/zsh-users/zsh-autosuggestions.git' }
+    - { name: 'zsh-syntax-highlighting', repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git' }
+    - { name: 'zsh-autocomplete', repo: 'https://github.com/marlonrichert/zsh-autocomplete.git' }
+  become_user: "{{ ansible_user_id }}"
